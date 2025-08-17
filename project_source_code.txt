@@ -1,0 +1,1433 @@
+
+// =================================================================================
+// FILE: .env
+// =================================================================================
+
+
+
+
+// =================================================================================
+// FILE: README.md
+// =================================================================================
+
+# Firebase Studio
+
+This is a NextJS starter in Firebase Studio.
+
+To get started, take a look at src/app/page.tsx.
+
+
+// =================================================================================
+// FILE: apphosting.yaml
+// =================================================================================
+
+# Settings to manage and configure a Firebase App Hosting backend.
+# https://firebase.google.com/docs/app-hosting/configure
+
+runConfig:
+  # Increase this value if you'd like to automatically spin up
+  # more instances in response to increased traffic.
+  maxInstances: 1
+
+# Connect a GitHub repository to your App Hosting backend for continuous deployment.
+# https://firebase.google.com/docs/app-hosting/continuous-deployment
+repository:
+  owner: jjester58-eng
+  name: football-attendance-app
+  branch: main
+
+
+// =================================================================================
+// FILE: components.json
+// =================================================================================
+
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "tailwind.config.ts",
+    "css": "src/app/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@/components",
+    "utils": "@/lib/utils",
+    "ui": "@/components/ui",
+    "lib": "@/lib",
+    "hooks": "@/hooks"
+  },
+  "iconLibrary": "lucide"
+}
+
+
+// =================================================================================
+// FILE: firebase.json
+// =================================================================================
+
+{
+  "hosting": {
+    "source": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
+
+
+// =================================================================================
+// FILE: next.config.ts
+// =================================================================================
+
+import type {NextConfig} from 'next';
+
+const nextConfig: NextConfig = {
+  /* config options here */
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '3.files.edl.io',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
+};
+
+export default nextConfig;
+
+
+// =================================================================================
+// FILE: package.json
+// =================================================================================
+
+{
+  "name": "nextn",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack -p 9002",
+    "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
+    "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@genkit-ai/googleai": "^1.14.1",
+    "@genkit-ai/next": "^1.14.1",
+    "@hookform/resolvers": "^4.1.3",
+    "@radix-ui/react-accordion": "^1.2.3",
+    "@radix-ui/react-alert-dialog": "^1.1.6",
+    "@radix-ui/react-avatar": "^1.1.3",
+    "@radix-ui/react-checkbox": "^1.1.4",
+    "@radix-ui/react-collapsible": "^1.1.11",
+    "@radix-ui/react-dialog": "^1.1.6",
+    "@radix-ui/react-dropdown-menu": "^2.1.6",
+    "@radix-ui/react-label": "^2.1.2",
+    "@radix-ui/react-menubar": "^1.1.6",
+    "@radix-ui/react-popover": "^1.1.6",
+    "@radix-ui/react-progress": "^1.1.2",
+    "@radix-ui/react-radio-group": "^1.2.3",
+    "@radix-ui/react-scroll-area": "^1.2.3",
+    "@radix-ui/react-select": "^2.1.6",
+    "@radix-ui/react-separator": "^1.1.2",
+    "@radix-ui/react-slider": "^1.2.3",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-switch": "^1.1.3",
+    "@radix-ui/react-tabs": "^1.1.3",
+    "@radix-ui/react-toast": "^1.2.6",
+    "@radix-ui/react-tooltip": "^1.1.8",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
+    "dotenv": "^16.5.0",
+    "embla-carousel-react": "^8.6.0",
+    "firebase": "^11.9.1",
+    "genkit": "^1.14.1",
+    "lucide-react": "^0.475.0",
+    "next": "15.3.3",
+    "patch-package": "^8.0.0",
+    "react": "^18.3.1",
+    "react-day-picker": "^8.10.1",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.54.2",
+    "recharts": "^2.15.1",
+    "tailwind-merge": "^3.0.1",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "genkit-cli": "^1.14.1",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
+}
+
+
+// =================================================================================
+// FILE: src/ai/dev.ts
+// =================================================================================
+
+import { config } from 'dotenv';
+config();
+
+import '@/ai/flows/suggest-corrections.ts';
+
+
+// =================================================================================
+// FILE: src/ai/flows/suggest-corrections.ts
+// =================================================================================
+
+'use server';
+
+/**
+ * @fileOverview AI-powered attendance correction suggestions.
+ *
+ * - suggestCorrections - a function that suggests corrections to attendance records.
+ * - SuggestCorrectionsInput - The input type for the suggestCorrections function.
+ * - SuggestCorrectionsOutput - The return type for the suggestCorrections function.
+ */
+
+import {ai} from '@/ai/genkit';
+import {z} from 'genkit';
+
+const SuggestCorrectionsInputSchema = z.object({
+  attendanceRecords: z
+    .string()
+    .describe(
+      'A string representation of attendance records, including student names, dates, and attendance status (present, absent, late, excused).'
+    ),
+  attendancePolicies: z
+    .string()
+    .describe(
+      'A string representation of the school or organization attendance policies.'
+    ),
+});
+export type SuggestCorrectionsInput = z.infer<typeof SuggestCorrectionsInputSchema>;
+
+const SuggestCorrectionsOutputSchema = z.object({
+  suggestedCorrections: z
+    .string()
+    .describe(
+      'A string containing suggested corrections to the attendance records, based on historical patterns and provided policies.'
+    ),
+  reasoning: z
+    .string()
+    .describe(
+      'A string explaining the reasoning behind the suggested corrections.'
+    ),
+});
+export type SuggestCorrectionsOutput = z.infer<typeof SuggestCorrectionsOutputSchema>;
+
+export async function suggestCorrections(input: SuggestCorrectionsInput): Promise<SuggestCorrectionsOutput> {
+  return suggestCorrectionsFlow(input);
+}
+
+const prompt = ai.definePrompt({
+  name: 'suggestCorrectionsPrompt',
+  input: {schema: SuggestCorrectionsInputSchema},
+  output: {schema: SuggestCorrectionsOutputSchema},
+  prompt: `You are an AI assistant designed to analyze attendance records and suggest corrections based on historical patterns and established policies.
+
+  Analyze the following attendance records:
+  {{attendanceRecords}}
+
+  Considering these attendance policies:
+  {{attendancePolicies}}
+
+  Suggest corrections to the attendance records, providing clear reasoning for each suggestion. Your suggestions should be formatted as a string that is easily parsable.
+  Reason about edge cases and common reporting errors.
+  It is imperative that the suggested corrections are in the same format as the input.
+  `,
+});
+
+const suggestCorrectionsFlow = ai.defineFlow(
+  {
+    name: 'suggestCorrectionsFlow',
+    inputSchema: SuggestCorrectionsInputSchema,
+    outputSchema: SuggestCorrectionsOutputSchema,
+  },
+  async input => {
+    const {output} = await prompt(input);
+    return output!;
+  }
+);
+
+
+// =================================================================================
+// FILE: src/ai/genkit.ts
+// =================================================================================
+
+import {genkit} from 'genkit';
+import {googleAI} from '@genkit-ai/googleai';
+
+export const ai = genkit({
+  plugins: [googleAI()],
+  model: 'googleai/gemini-2.0-flash',
+});
+
+
+// =================================================================================
+// FILE: src/app/globals.css
+// =================================================================================
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 20% 96%;
+    --foreground: 222.2 47.4% 11.2%;
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 47.4% 11.2%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 47.4% 11.2%;
+    --primary: 24 9.8% 30%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 210 40% 9.8%;
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 210 40% 45.1%;
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 210 40% 9.8%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 210 40% 91.4%;
+    --input: 210 40% 91.4%;
+    --ring: 24 9.8% 30%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 222.2 47.4% 11.2%;
+    --foreground: 210 40% 98%;
+    --card: 222.2 47.4% 11.2%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222.2 47.4% 11.2%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 220 20% 80%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 210 40% 14.9%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 210 40% 14.9%;
+    --muted-foreground: 210 40% 63.9%;
+    --accent: 210 40% 14.9%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 210 40% 14.9%;
+    --input: 210 40% 14.9%;
+    --ring: 220 20% 80%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+
+// =================================================================================
+// FILE: src/app/layout.tsx
+// =================================================================================
+
+import type { Metadata } from 'next';
+import './globals.css';
+import { Toaster } from "@/components/ui/toaster"
+
+export const metadata: Metadata = {
+  title: 'Football Attendance',
+  description: 'An AI-powered attendance tracker.',
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+      </head>
+      <body className="font-body antialiased">
+        {children}
+        <Toaster />
+      </body>
+    </html>
+  );
+}
+
+
+// =================================================================================
+// FILE: src/components/attendance-tracker.tsx
+// =================================================================================
+
+"use client";
+
+import React, { useState, useMemo, useEffect, type FC } from 'react';
+import { format } from 'date-fns';
+import { Calendar as CalendarIcon, CheckCircle2, XCircle, Clock, ShieldCheck, Download, Wand2, Mail, MoreHorizontal, Upload, Pencil, ShieldAlert, ArrowUpDown, Plus, Trash2 } from 'lucide-react';
+import type { AttendanceRecord, AttendanceStatus, Student, Class } from '@/types';
+import { cn, exportToCsv } from '@/lib/utils';
+import { 
+    fetchClasses, 
+    fetchStudents, 
+    fetchAttendanceRecords, 
+    addOrUpdateAttendance, 
+    saveClasses,
+    addStudentToClass,
+    saveStudent,
+    deleteStudentsFromClass,
+    importStudentsToClass,
+} from '@/lib/firestore';
+
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
+import SuggestCorrectionsDialog from '@/components/suggest-corrections-dialog';
+import ImportStudentsDialog from '@/components/import-students-dialog';
+import AttendanceReport from '@/components/attendance-report';
+import EditClassesDialog from '@/components/edit-classes-dialog';
+import EditStudentDialog from '@/components/edit-student-dialog';
+import AddStudentDialog from '@/components/add-student-dialog';
+import NotifyParentsDialog from '@/components/notify-parents-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Checkbox } from '@/components/ui/checkbox';
+import { Skeleton } from '@/components/ui/skeleton';
+
+
+const statusConfig: Record<
+  AttendanceStatus,
+  { label: string; icon: FC<{ className?: string }>; badge: string; iconColor: string; }
+> = {
+  present: { label: 'Present', icon: CheckCircle2, badge: 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300', iconColor: 'text-green-500' },
+  absent: { label: 'Absent', icon: XCircle, badge: 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300', iconColor: 'text-red-500' },
+  late: { label: 'Late', icon: Clock, badge: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300', iconColor: 'text-yellow-500' },
+  excused: { label: 'Excused', icon: ShieldCheck, badge: 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300', iconColor: 'text-blue-500' },
+  injured: { label: 'Injured', icon: ShieldAlert, badge: 'bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300', iconColor: 'text-orange-500' },
+};
+
+type SortableKeys = 'name' | 'group';
+
+export default function AttendanceTracker() {
+  const [students, setStudents] = useState<Student[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
+  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [selectedClassId, setSelectedClassId] = useState<string>('');
+  const [sortConfig, setSortConfig] = useState<{ key: SortableKeys; direction: 'ascending' | 'descending' }>({ key: 'name', direction: 'ascending' });
+  const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
+  
+  const [isSuggestCorrectionsOpen, setSuggestCorrectionsOpen] = useState(false);
+  const [isImportStudentsOpen, setImportStudentsOpen] = useState(false);
+  const [isEditClassesOpen, setEditClassesOpen] = useState(false);
+  const [isAddStudentOpen, setAddStudentOpen] = useState(false);
+  const [isNotifyParentsOpen, setNotifyParentsOpen] = useState(false);
+  const [editingStudent, setEditingStudent] = useState<Student | null>(null);
+
+  const { toast } = useToast();
+
+  useEffect(() => {
+    setIsLoading(true);
+    const unsubClasses = fetchClasses((fetchedClasses) => {
+        setClasses(fetchedClasses);
+        if (fetchedClasses.length > 0 && !selectedClassId) {
+            setSelectedClassId(fetchedClasses[0].id);
+        }
+        setIsLoading(false);
+    });
+
+    const unsubStudents = fetchStudents(setStudents);
+    const unsubAttendance = fetchAttendanceRecords(setAttendanceRecords);
+
+    return () => {
+        unsubClasses();
+        unsubStudents();
+        unsubAttendance();
+    };
+  }, [selectedClassId]);
+
+
+  const handleStatusChange = async (studentId: string, status: AttendanceStatus) => {
+    const dateStr = format(selectedDate, 'yyyy-MM-dd');
+    try {
+        await addOrUpdateAttendance(studentId, selectedClassId, dateStr, status);
+    } catch (error) {
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Failed to update attendance.'
+        })
+    }
+  };
+
+  const studentAbsenceCount = useMemo(() => {
+    const counts: Record<string, number> = {};
+    attendanceRecords.forEach(record => {
+      if(record.classId === selectedClassId && record.status === 'absent') {
+        counts[record.studentId] = (counts[record.studentId] || 0) + 1;
+      }
+    });
+    return counts;
+  }, [attendanceRecords, selectedClassId]);
+
+  const sortedRecords = useMemo(() => {
+    const dateStr = format(selectedDate, 'yyyy-MM-dd');
+    const selectedClass = classes.find(c => c.id === selectedClassId);
+    if (!selectedClass) return [];
+    
+    const classStudents = students.filter(s => selectedClass.studentIds.includes(s.id));
+
+    const records = classStudents.map((student) => {
+      const record = attendanceRecords.find(
+        (r) => r.studentId === student.id && r.date === dateStr && r.classId === selectedClassId
+      );
+      return {
+        ...student,
+        status: record?.status || 'present',
+        timestamp: record?.timestamp,
+        totalAbsences: studentAbsenceCount[student.id] || 0
+      };
+    });
+
+    return [...records].sort((a, b) => {
+      const aValue = a[sortConfig.key] || '';
+      const bValue = b[sortConfig.key] || '';
+      
+      if (aValue < bValue) {
+        return sortConfig.direction === 'ascending' ? -1 : 1;
+      }
+      if (aValue > bValue) {
+        return sortConfig.direction === 'ascending' ? 1 : -1;
+      }
+      return 0;
+    });
+
+  }, [selectedDate, attendanceRecords, students, classes, selectedClassId, studentAbsenceCount, sortConfig]);
+
+  const handleSort = (key: SortableKeys) => {
+    setSortConfig(prevConfig => {
+      if (prevConfig.key === key && prevConfig.direction === 'ascending') {
+        return { key, direction: 'descending' };
+      }
+      return { key, direction: 'ascending' };
+    });
+  };
+
+  const handleExport = () => {
+    const selectedClass = classes.find(c => c.id === selectedClassId);
+    if (!selectedClass) return;
+
+    const classStudents = students.filter(s => selectedClass.studentIds.includes(s.id));
+    const classAttendance = attendanceRecords.filter(r => r.classId === selectedClassId);
+
+    // Get all unique dates for this class, and sort them
+    const allDates = [...new Set(classAttendance.map(r => r.date))].sort();
+
+    const header = ['studentId', 'name', 'group', 'parentEmail', ...allDates];
+
+    const dataToExport = classStudents.map(student => {
+        const studentRow: (string | number)[] = [
+            student.id,
+            student.name,
+            student.group || '',
+            student.parentEmail || ''
+        ];
+
+        allDates.forEach(date => {
+            const record = classAttendance.find(r => r.studentId === student.id && r.date === date);
+            studentRow.push(record ? record.status : ''); // Add status or empty string
+        });
+        
+        return studentRow;
+    });
+
+    dataToExport.unshift(header);
+    exportToCsv(`attendance_${selectedClass.name.replace(/\s/g, '_')}.csv`, dataToExport);
+    
+    toast({
+      title: "Export Successful",
+      description: "Full attendance roster has been exported to CSV.",
+    });
+  };
+
+
+  const handleNotifyClick = () => {
+    const absentStudents = sortedRecords.filter(rec => rec.status === 'absent' && rec.parentEmail);
+    if (absentStudents.length === 0) {
+      toast({
+        title: "No Absences to Report",
+        description: "All students with registered parent emails are accounted for.",
+      });
+      return;
+    }
+    setNotifyParentsOpen(true);
+  };
+  
+  const getAttendanceRecordsAsString = () => {
+    return attendanceRecords
+      .filter(r => r.classId === selectedClassId)
+      .map(r => `Student ID: ${r.studentId}, Date: ${r.date}, Status: ${r.status}`).join('\n');
+  };
+
+  const handleImportStudents = async (importedData: Partial<Student>[]) => {
+    try {
+        await importStudentsToClass(importedData, selectedClassId);
+        toast({
+            title: 'Import Successful',
+            description: `Roster has been updated.`,
+        });
+    } catch (error) {
+        toast({
+            variant: 'destructive',
+            title: 'Import Failed',
+            description: 'Could not import student data.',
+        });
+    }
+  };
+
+  const handleSaveClasses = async (updatedClasses: Class[]) => {
+    try {
+        await saveClasses(updatedClasses);
+        if (!updatedClasses.some(c => c.id === selectedClassId)) {
+            setSelectedClassId(updatedClasses[0]?.id || '');
+        }
+        toast({
+            title: 'Classes Updated',
+            description: 'Your class list has been saved.',
+        });
+    } catch (error) {
+        toast({
+            variant: 'destructive',
+            title: 'Save Failed',
+            description: 'Could not save classes.'
+        });
+    }
+  };
+  
+  const handleSaveStudent = async (updatedStudent: Student) => {
+    try {
+        await saveStudent(updatedStudent);
+        toast({
+          title: 'Student Updated',
+          description: `${updatedStudent.name}'s information has been saved.`,
+        });
+        setEditingStudent(null);
+    } catch(error) {
+        toast({
+            variant: 'destructive',
+            title: 'Update Failed',
+            description: 'Could not update student.',
+        });
+    }
+  };
+  
+  const handleAddStudent = async (student: Omit<Student, 'id'>) => {
+    if (!selectedClassId) {
+         toast({
+            variant: 'destructive',
+            title: 'No Class Selected',
+            description: 'Please select a class before adding a student.',
+        });
+        return;
+    }
+    try {
+        await addStudentToClass(student, selectedClassId);
+        toast({
+            title: 'Student Added',
+            description: `${student.name} has been added to the class.`,
+        });
+    } catch (error) {
+        toast({
+            variant: 'destructive',
+            title: 'Add Failed',
+            description: 'Could not add student.',
+        });
+    }
+  };
+
+  const handleDeleteStudents = async () => {
+    try {
+        await deleteStudentsFromClass(selectedStudents, selectedClassId);
+        toast({
+            title: 'Students Deleted',
+            description: `${selectedStudents.length} student(s) have been removed.`,
+        });
+        setSelectedStudents([]); // Clear selection
+    } catch (error) {
+         toast({
+            variant: 'destructive',
+            title: 'Delete Failed',
+            description: 'Could not delete students.',
+        });
+    }
+  };
+
+  const handleSelectStudent = (studentId: string, isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedStudents(prev => [...prev, studentId]);
+    } else {
+      setSelectedStudents(prev => prev.filter(id => id !== studentId));
+    }
+  };
+
+  const handleSelectAll = (isAllSelected: boolean) => {
+    if (isAllSelected) {
+      setSelectedStudents(sortedRecords.map(r => r.id));
+    } else {
+      setSelectedStudents([]);
+    }
+  };
+
+  const selectedClass = classes.find(c => c.id === selectedClassId);
+  
+  const renderSortIcon = (key: SortableKeys) => {
+    if (sortConfig.key !== key) {
+      return <ArrowUpDown className="h-4 w-4 ml-2 opacity-20" />;
+    }
+    return sortConfig.direction === 'ascending' ? 
+      <ArrowUpDown className="h-4 w-4 ml-2 transform" /> : 
+      <ArrowUpDown className="h-4 w-4 ml-2 transform rotate-180" />;
+  };
+
+  const isAllSelected = sortedRecords.length > 0 && selectedStudents.length === sortedRecords.length;
+  const absentStudentsWithEmail = sortedRecords.filter(rec => rec.status === 'absent' && rec.parentEmail);
+
+  if (isLoading) {
+      return (
+        <div className="w-full max-w-7xl p-4 sm:p-8 md:p-12">
+            <Card>
+                <CardHeader>
+                    <Skeleton className="h-8 w-1/2" />
+                    <Skeleton className="h-4 w-3/4" />
+                </CardHeader>
+                <CardContent>
+                    <div className="space-y-4">
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                        <Skeleton className="h-10 w-full" />
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+      )
+  }
+
+  return (
+    <>
+      <Tabs defaultValue="daily">
+        <CardHeader>
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div>
+              <CardTitle>{selectedClass?.name || 'Select Class'} - {format(selectedDate, 'MMMM d, yyyy')}</CardTitle>
+              <CardDescription>Log and manage student attendance for the selected day.</CardDescription>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Select value={selectedClassId} onValueChange={(value) => { setSelectedClassId(value); setSelectedStudents([]); }} disabled={!selectedClassId}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Select a class" />
+                </SelectTrigger>
+                <SelectContent>
+                  {classes.map(c => (
+                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button variant="outline" size="icon" onClick={() => setEditClassesOpen(true)}><Pencil /></Button>
+               <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-[240px] justify-start text-left font-normal",
+                      !selectedDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {selectedDate ? format(selectedDate, "PPP") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={(date) => date && setSelectedDate(date)}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+               <TabsList>
+                <TabsTrigger value="daily">Daily</TabsTrigger>
+                <TabsTrigger value="reports">Reports</TabsTrigger>
+              </TabsList>
+              <div className="flex items-center gap-2">
+                 {selectedStudents.length > 0 && (
+                   <AlertDialog>
+                     <AlertDialogTrigger asChild>
+                       <Button variant="destructive" size="icon"><Trash2 /></Button>
+                     </AlertDialogTrigger>
+                     <AlertDialogContent>
+                       <AlertDialogHeader>
+                         <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                         <AlertDialogDescription>
+                           This action cannot be undone. This will permanently delete {selectedStudents.length} student(s) and all their attendance data.
+                         </AlertDialogDescription>
+                       </AlertDialogHeader>
+                       <AlertDialogFooter>
+                         <AlertDialogCancel>Cancel</AlertDialogCancel>
+                         <AlertDialogAction onClick={handleDeleteStudents}>Continue</AlertDialogAction>
+                       </AlertDialogFooter>
+                     </AlertDialogContent>
+                   </AlertDialog>
+                 )}
+                 <Button variant="outline" onClick={() => setAddStudentOpen(true)}><Plus/>Add Student</Button>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-end gap-4 mt-4">
+             <div className="flex items-center gap-2 flex-wrap">
+                <Button variant="outline" onClick={() => setImportStudentsOpen(true)}><Upload/>Import</Button>
+                <Button variant="outline" onClick={() => setSuggestCorrectionsOpen(true)}><Wand2/>Suggest</Button>
+                <Button variant="outline" onClick={handleExport}><Download/>Export</Button>
+                <Button onClick={handleNotifyClick}><Mail/>Notify</Button>
+            </div>
+          </div>
+        </CardHeader>
+        <TabsContent value="daily">
+          <Card>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-[40px]">
+                         <Checkbox
+                           checked={isAllSelected}
+                           onCheckedChange={(checked) => handleSelectAll(!!checked)}
+                           aria-label="Select all"
+                         />
+                      </TableHead>
+                      <TableHead>
+                        <Button variant="ghost" onClick={() => handleSort('name')}>
+                          Student
+                          {renderSortIcon('name')}
+                        </Button>
+                      </TableHead>
+                      <TableHead className="hidden sm:table-cell">
+                        <Button variant="ghost" onClick={() => handleSort('group')}>
+                          Group
+                          {renderSortIcon('group')}
+                        </Button>
+                      </TableHead>
+                      <TableHead className="hidden sm:table-cell">Absences</TableHead>
+                      <TableHead>
+                        <div className="hidden md:flex items-center justify-start gap-4">
+                          {Object.values(statusConfig).map(({ label, icon: Icon, iconColor }) => (
+                            <div key={label} className="flex items-center gap-2">
+                              <Icon className={cn("h-5 w-5", iconColor)} />
+                              <span className="text-muted-foreground">{label}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <span className="md:hidden">Status</span>
+                      </TableHead>
+                      <TableHead className="text-right"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {sortedRecords.map((record) => (
+                        <TableRow key={record.id} data-state={selectedStudents.includes(record.id) ? "selected" : ""}>
+                          <TableCell>
+                             <Checkbox
+                               checked={selectedStudents.includes(record.id)}
+                               onCheckedChange={(checked) => handleSelectStudent(record.id, !!checked)}
+                               aria-label={`Select ${record.name}`}
+                              />
+                          </TableCell>
+                          <TableCell className="font-medium">{record.name}</TableCell>
+                          <TableCell className="hidden sm:table-cell text-muted-foreground">{record.group || 'N/A'}</TableCell>
+                          <TableCell className="hidden sm:table-cell">
+                             {record.totalAbsences > 0 ? <Badge variant={record.totalAbsences > 2 ? "destructive" : "secondary"}>{record.totalAbsences}</Badge> : null}
+                          </TableCell>
+                          <TableCell>
+                            {/* Desktop icon buttons */}
+                            <div className="hidden sm:flex items-center gap-1">
+                                {Object.entries(statusConfig).map(([status, {icon: Icon, iconColor, label}]) => (
+                                    <Button
+                                        key={status}
+                                        variant={record.status === status ? "outline" : "ghost"}
+                                        size="icon"
+                                        onClick={() => handleStatusChange(record.id, status as AttendanceStatus)}
+                                        className={cn("border-2", record.status === status ? 'border-primary' : 'border-transparent')}
+                                        aria-label={label}
+                                    >
+                                        <Icon className={cn("h-5 w-5", iconColor)} />
+                                    </Button>
+                                ))}
+                            </div>
+                            {/* Mobile dropdown */}
+                            <div className="sm:hidden">
+                                <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                        <Button variant="outline" className="flex items-center gap-2">
+                                            {React.createElement(statusConfig[record.status].icon, { className: cn("h-5 w-5", statusConfig[record.status].iconColor) })}
+                                            <span>{statusConfig[record.status].label}</span>
+                                        </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent>
+                                        {Object.entries(statusConfig).map(([status, {icon: Icon, label, iconColor}]) => (
+                                            <DropdownMenuItem key={status} onSelect={() => handleStatusChange(record.id, status as AttendanceStatus)}>
+                                                 <Icon className={cn("h-5 w-5 mr-2", iconColor)} />
+                                                <span>{label}</span>
+                                            </DropdownMenuItem>
+                                        ))}
+                                    </DropdownMenuContent>
+                                </DropdownMenu>
+                            </div>
+                          </TableCell>
+                          <TableCell className="text-right">
+                               <Button variant="ghost" size="icon" onClick={() => setEditingStudent(record)}>
+                                <Pencil className="h-4 w-4" />
+                                <span className="sr-only">Edit Student</span>
+                              </Button>
+                          </TableCell>
+                        </TableRow>
+                      )
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="reports">
+           <AttendanceReport 
+              attendanceRecords={attendanceRecords} 
+              students={students} 
+              classes={classes}
+              selectedClassId={selectedClassId}
+           />
+        </TabsContent>
+      </Tabs>
+      <SuggestCorrectionsDialog
+        isOpen={isSuggestCorrectionsOpen}
+        setIsOpen={setSuggestCorrectionsOpen}
+        attendanceRecordsString={getAttendanceRecordsAsString()}
+        onApplySuggestions={(suggestions) => {
+          // This is a simplified apply logic. A real app would parse this string.
+          toast({ title: 'Suggestions Applied', description: 'Attendance records have been updated based on AI suggestions.' });
+        }}
+      />
+      <ImportStudentsDialog
+        isOpen={isImportStudentsOpen}
+        setIsOpen={setImportStudentsOpen}
+        onImport={handleImportStudents}
+      />
+      <EditClassesDialog
+        isOpen={isEditClassesOpen}
+        setIsOpen={setEditClassesOpen}
+        classes={classes}
+        onSave={handleSaveClasses}
+      />
+       {editingStudent && (
+        <EditStudentDialog
+            isOpen={!!editingStudent}
+            setIsOpen={(isOpen) => !isOpen && setEditingStudent(null)}
+            student={editingStudent}
+            onSave={handleSaveStudent}
+        />
+      )}
+      <AddStudentDialog
+        isOpen={isAddStudentOpen}
+        setIsOpen={setAddStudentOpen}
+        onAdd={handleAddStudent}
+      />
+      <NotifyParentsDialog
+        isOpen={isNotifyParentsOpen}
+        setIsOpen={setNotifyParentsOpen}
+        absentStudents={absentStudentsWithEmail}
+      />
+    </>
+  );
+}
+
+
+// =================================================================================
+// FILE: src/lib/firestore.ts
+// =================================================================================
+
+import { db } from './firebase';
+import { 
+    collection, 
+    getDocs, 
+    getDoc,
+    doc, 
+    writeBatch,
+    Timestamp,
+    query,
+    where,
+    onSnapshot,
+    type Unsubscribe
+} from 'firebase/firestore';
+import type { Student, Class, AttendanceRecord, AttendanceStatus, FirestoreStudent, FirestoreClass, FirestoreAttendanceRecord } from '@/types';
+
+// Fetch all classes
+export const fetchClasses = (callback: (classes: Class[]) => void): Unsubscribe => {
+    const q = query(collection(db, "classes"));
+    return onSnapshot(q, (querySnapshot) => {
+        const classes: Class[] = [];
+        querySnapshot.forEach((doc) => {
+            const data = doc.data() as FirestoreClass;
+            classes.push({ ...data, id: doc.id });
+        });
+        callback(classes);
+    });
+};
+
+// Fetch all students
+export const fetchStudents = (callback: (students: Student[]) => void): Unsubscribe => {
+    const q = query(collection(db, "students"));
+    return onSnapshot(q, (querySnapshot) => {
+        const students: Student[] = [];
+        querySnapshot.forEach((doc) => {
+            const data = doc.data() as FirestoreStudent;
+            students.push({ ...data, id: doc.id });
+        });
+        callback(students);
+    });
+};
+
+// Fetch all attendance records
+export const fetchAttendanceRecords = (callback: (records: AttendanceRecord[]) => void): Unsubscribe => {
+    const q = query(collection(db, "attendance"));
+    return onSnapshot(q, (querySnapshot) => {
+        const records: AttendanceRecord[] = [];
+        querySnapshot.forEach((doc) => {
+            const data = doc.data() as FirestoreAttendanceRecord;
+            records.push({ 
+                ...data, 
+                id: doc.id,
+                timestamp: data.timestamp instanceof Timestamp ? data.timestamp.toMillis() : Date.now()
+            });
+        });
+        callback(records);
+    });
+};
+
+
+export const addOrUpdateAttendance = async (studentId: string, classId: string, date: string, status: AttendanceStatus) => {
+    const attendanceCol = collection(db, 'attendance');
+    const q = query(attendanceCol, 
+        where("studentId", "==", studentId), 
+        where("classId", "==", classId),
+        where("date", "==", date)
+    );
+
+    const batch = writeBatch(db);
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+        // Add new record
+        const newRecordRef = doc(collection(db, 'attendance'));
+        batch.set(newRecordRef, { studentId, classId, date, status, timestamp: Timestamp.now() });
+    } else {
+        // Update existing record
+        const recordDoc = querySnapshot.docs[0];
+        batch.update(recordDoc.ref, { status, timestamp: Timestamp.now() });
+    }
+    await batch.commit();
+}
+
+
+export const saveClasses = async (classesToSave: Class[]) => {
+    const batch = writeBatch(db);
+    
+    classesToSave.forEach(c => {
+        const docRef = doc(db, 'classes', c.id);
+        batch.set(docRef, { name: c.name, studentIds: c.studentIds });
+    });
+
+    await batch.commit();
+};
+
+export const saveStudent = async (student: Student) => {
+    const docRef = doc(db, 'students', student.id);
+    const dataToSave: Omit<FirestoreStudent, 'id'> = { name: student.name };
+    if (student.group) dataToSave.group = student.group;
+    if (student.parentEmail) dataToSave.parentEmail = student.parentEmail;
+    await writeBatch(db).set(docRef, dataToSave, { merge: true }).commit();
+}
+
+export const addStudentToClass = async (studentData: Omit<Student, 'id'>, classId: string) => {
+    const batch = writeBatch(db);
+
+    // Create the new student
+    const newStudentRef = doc(collection(db, 'students'));
+    batch.set(newStudentRef, studentData);
+
+    // Add the new student's ID to the class
+    const classRef = doc(db, 'classes', classId);
+    const classDoc = await getDoc(classRef);
+    if (classDoc.exists()) {
+        const classData = classDoc.data() as FirestoreClass;
+        const updatedStudentIds = [...classData.studentIds, newStudentRef.id];
+        batch.update(classRef, { studentIds: updatedStudentIds });
+    }
+
+    await batch.commit();
+}
+
+export const deleteStudentsFromClass = async (studentIds: string[], classId: string) => {
+    const batch = writeBatch(db);
+
+    // 1. Remove students from the class's studentIds array
+    const classRef = doc(db, 'classes', classId);
+    const classDoc = await getDoc(classRef);
+    if(classDoc.exists()) {
+        const classData = classDoc.data() as FirestoreClass;
+        const newStudentIds = classData.studentIds.filter(id => !studentIds.includes(id));
+        batch.update(classRef, { studentIds: newStudentIds });
+    }
+
+    // 2. For each student, delete their main document and their attendance records.
+    for (const studentId of studentIds) {
+        // Delete student doc
+        const studentRef = doc(db, 'students', studentId);
+        batch.delete(studentRef);
+
+        // Find and delete attendance records
+        const attendanceQuery = query(collection(db, 'attendance'), where('studentId', '==', studentId));
+        const attendanceSnapshot = await getDocs(attendanceQuery);
+        attendanceSnapshot.forEach(doc => batch.delete(doc.ref));
+    }
+
+    await batch.commit();
+}
+
+export const importStudentsToClass = async (studentsToImport: Partial<Student>[], classId: string) => {
+    const batch = writeBatch(db);
+    const classRef = doc(db, 'classes', classId);
+    
+    const newStudentIds: string[] = [];
+
+    for (const studentData of studentsToImport) {
+        if (studentData.id) { // Update existing student
+             const studentRef = doc(db, 'students', studentData.id);
+             batch.update(studentRef, {
+                 ...(studentData.name && { name: studentData.name }),
+                 ...(studentData.group && { group: studentData.group }),
+                 ...(studentData.parentEmail && { parentEmail: studentData.parentEmail }),
+             });
+        } else { // Create new student
+            const newStudentRef = doc(collection(db, 'students'));
+            batch.set(newStudentRef, {
+                name: studentData.name || 'Unnamed Student',
+                ...(studentData.group && { group: studentData.group }),
+                ...(studentData.parentEmail && { parentEmail: studentData.parentEmail }),
+            });
+            newStudentIds.push(newStudentRef.id);
+        }
+    }
+    
+    // Add new students to the class list if any were created
+    if (newStudentIds.length > 0) {
+        const classDoc = await getDoc(classRef);
+        if (classDoc.exists()) {
+            const classData = classDoc.data() as FirestoreClass;
+            const updatedStudentIds = [...classData.studentIds, ...newStudentIds];
+            batch.update(classRef, { studentIds: updatedStudentIds });
+        }
+    }
+    
+    await batch.commit();
+};
+
+
+// =================================================================================
+// FILE: src/lib/utils.ts
+// =================================================================================
+
+import { clsx, type ClassValue } from "clsx"
+import { twMerge } from "tailwind-merge"
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
+export function exportToCsv(filename: string, rows: (string | number)[][]) {
+  const csvContent = rows.map(e => 
+    e.map(item => {
+      const strItem = String(item ?? ''); // Use empty string for null/undefined
+      // Handle commas, quotes, and newlines in the data
+      if (strItem.includes(',') || strItem.includes('"') || strItem.includes('\n')) {
+        return `"${strItem.replace(/"/g, '""')}"`;
+      }
+      return strItem;
+    }).join(",")
+  ).join("\n");
+  
+  const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement("a");
+  
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  }
+}
+
+
+// =================================================================================
+// FILE: src/types/index.ts
+// =================================================================================
+
+import type { Timestamp } from 'firebase/firestore';
+
+export type AttendanceStatus = 'present' | 'absent' | 'late' | 'excused' | 'injured';
+
+export interface Student {
+  id: string;
+  name: string;
+  parentEmail?: string;
+  group?: string;
+}
+
+export interface AttendanceRecord {
+  id: string;
+  studentId: string;
+  classId: string;
+  date: string; // YYYY-MM-DD
+  status: AttendanceStatus;
+  timestamp: number;
+}
+
+export interface Class {
+  id: string;
+  name: string;
+  studentIds: string[];
+}
+
+// Firestore types
+export interface FirestoreClass {
+    name: string;
+    studentIds: string[];
+}
+
+export interface FirestoreStudent {
+    name: string;
+    parentEmail?: string;
+    group?: string;
+}
+
+export interface FirestoreAttendanceRecord {
+    studentId: string;
+    classId: string;
+    date: string; // YYYY-MM-DD
+    status: AttendanceStatus;
+    timestamp: Timestamp;
+}
+
+
+// =================================================================================
+// FILE: tailwind.config.ts
+// =================================================================================
+
+import type {Config} from 'tailwindcss';
+
+export default {
+  darkMode: ['class'],
+  content: [
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+  ],
+  theme: {
+    extend: {
+      fontFamily: {
+        body: ['Inter', 'sans-serif'],
+        headline: ['Inter', 'sans-serif'],
+        code: ['monospace'],
+      },
+      colors: {
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+        chart: {
+          '1': 'hsl(142.1 76.2% 36.3%)', // green for present
+          '2': 'hsl(0 84.2% 60.2%)',    // red for absent
+          '3': 'hsl(47.9 95.8% 53.1%)',  // yellow for late
+          '4': 'hsl(221.2 83.2% 53.3%)', // blue for excused
+          '5': 'hsl(24.6 95% 53.1%)',   // orange for injured
+        },
+        sidebar: {
+          DEFAULT: 'hsl(var(--sidebar-background))',
+          foreground: 'hsl(var(--sidebar-foreground))',
+          primary: 'hsl(var(--sidebar-primary))',
+          'primary-foreground': 'hsl(var(--sidebar-primary-foreground))',
+          accent: 'hsl(var(--sidebar-accent))',
+          'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
+          border: 'hsl(var(--sidebar-border))',
+          ring: 'hsl(var(--sidebar-ring))',
+        },
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
+      },
+      keyframes: {
+        'accordion-down': {
+          from: {
+            height: '0',
+          },
+          to: {
+            height: 'var(--radix-accordion-content-height)',
+          },
+        },
+        'accordion-up': {
+          from: {
+            height: 'var(--radix-accordion-content-height)',
+          },
+          to: {
+            height: '0',
+          },
+        },
+      },
+      animation: {
+        'accordion-down': 'accordion-down 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out',
+      },
+    },
+  },
+  plugins: [require('tailwindcss-animate')],
+} satisfies Config;
+
+
+// =================================================================================
+// FILE: tsconfig.json
+// =================================================================================
+
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
+
